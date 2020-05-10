@@ -1,0 +1,115 @@
+<mat-toolbar class="shadow">
+    <span>Computation for the Incidence Rate (IR)</span>
+    <!-- This fills the remaining space of the current row -->
+    <span class="tool-fill-remaining-space"></span>
+    <select class="select-css" style="width:300px;" (change)="onRegionChangeZoom($event.target.value)">                                                
+        <option *ngFor="let region of getRegion()" value="{{region}}">{{region}}</option>
+    </select>
+</mat-toolbar>
+
+<div id="covidmap">
+    <div class="legend">
+         <h6>IR Legend</h6>   
+        <div><div style="background-color: #07a626;" class="boxcolor"></div><div class="box-label">&nbsp;&nbsp;AREAS OUTSIDE BUFFER ZONE</div></div>
+        <div><div style="background-color: #f8fc03;" class="boxcolor"></div><div class="box-label">&nbsp;&nbsp;BUFFER ZONE</div></div>
+        <div><div style="background-color: #f09b13" class="boxcolor"></div><div class="box-label">&nbsp;&nbsp;CONTAINMENT ZONE (CZ)</div></div>        
+        <div><div style="background-color: #c20f02" class="boxcolor"></div><div class="box-label">&nbsp;&nbsp;CRITICAL ZONE (CrZ)</div></div>                
+    </div>
+</div>
+<div class="info-layout">
+    <mat-tab-group>
+        <mat-tab label="Detail per City">
+            <div class="row">
+                <div class="col-lg-7">
+                        <table class="table-detail table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="40%">
+                                            <select class="select-css" (change)="onRegionChange($event.target.value)">                                                
+                                                <option *ngFor="let region of getRegion()" value="{{region}}">{{region}}</option>
+                                            </select>                                            
+                                        </th>
+                                        <th align="left">
+                                            <select class="select-css" (change)="onCityChange($event.target.value,selectedRegion)">
+                                                <option value="0">Select City</option>
+                                                <option *ngFor="let city of getCities(selectedRegion)" value="{{city}}">{{city}}</option>
+                                            </select>
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td align="right"><a href="#" (click)="donwloadCovidStatus(selectedCity,selectedRegion)">Download csv</a>&nbsp;&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                              <table class="table-detail-info">
+                                                    <thead>
+                                                      <tr>
+                                                          <th>Barangay</th>
+                                                          <th>Population</th>
+                                                          <th>Suspect</th>
+                                                          <th>Probable</th>
+                                                          <th>Confirmed</th>
+                                                          <th>Total</th>
+                                                          <th>IR/Status</th>
+                                                      </tr>
+                                                    </thead>                                                    
+                                                  <tbody>
+                                                        <tr *ngFor="let brgy of dataIR">
+                                                                <td>{{ brgy.barangay }}</td>
+                                                                <td align="right">{{ brgy.population }}</td>
+                                                                <td align="right">{{ brgy.suspect }}</td>
+                                                                <td align="right">{{ brgy.probable }}</td>
+                                                                <td align="right">{{ brgy.confirmed }}</td>                                                                
+                                                                <td align="right">{{ brgy.total }}</td>
+                                                                <td align="right" style="color:#333" [ngStyle]="{'background-color':getColor(brgy.status)}"><b>{{ brgy.ir }}</b></td>
+                                                        </tr>
+                                                  </tbody>
+                                                  <tfoot>
+                                                      <tr>
+                                                            <td align="right">Total</td>
+                                                            <td align="right">{{dataIRTotal.population}}</td>
+                                                            <td align="right">{{dataIRTotal.suspect}}</td>
+                                                            <td align="right">{{dataIRTotal.probable}}</td>
+                                                            <td align="right">{{dataIRTotal.confirmed}}</td>
+                                                            <td align="right">{{dataIRTotal.total}}</td>
+                                                            <td align="right"></td>
+                                                      </tr>
+                                                  </tfoot>
+                                              </table>  
+                                        </td>
+                                    </tr>
+                                </tbody>
+                        </table>
+                </div>
+                <div class="col-lg-5">
+                        <table class="table-chart table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>&nbsp;Covid Summary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <canvas baseChart 
+                                                [(datasets)]="pieChartDataTrend" 
+                                                [options] = "pieChartOptions"
+                                                [labels]="['Suspect','Probable','Confirmed']" 
+                                                [chartType]="'pie'"
+                                                [plugins]="pieChartPlugins"
+                                                [legend]="true"
+                                                [colors]="pieChartColorTrend">
+                                              </canvas>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                        </table>
+                </div>
+            </div>
+        </mat-tab>        
+      </mat-tab-group>
+</div>
